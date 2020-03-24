@@ -69,6 +69,7 @@ type (
 func (p Plugin) Exec() error {
 	// start the Docker daemon server
 	if !p.Daemon.Disabled {
+		fmt.Fprintln(os.Stdout,"start the Docker daemon server")
 		fmt.Println("start the Docker daemon server")
 		p.startDaemon()
 	}
@@ -76,6 +77,7 @@ func (p Plugin) Exec() error {
 	// poll the docker daemon until it is started. This ensures the daemon is
 	// ready to accept connections before we proceed.
 	for i := 0; i < 15; i++ {
+		fmt.Fprintln(os.Stdout,"poll the docker daemon until it is started")
 		fmt.Println("poll the docker daemon until it is started.")
 		cmd := commandInfo()
 		err := cmd.Run()
