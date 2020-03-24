@@ -3,6 +3,7 @@
 package docker
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -19,8 +20,10 @@ func (p Plugin) startDaemon() {
 		cmd.Stdout = ioutil.Discard
 		cmd.Stderr = ioutil.Discard
 	}
+	fmt.Println("start: startDaemon: cmd.Run")
 	go func() {
 		trace(cmd)
 		cmd.Run()
+		fmt.Println("end: startDaemon: cmd.Run")
 	}()
 }
