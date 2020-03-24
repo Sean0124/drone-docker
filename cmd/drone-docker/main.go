@@ -1,13 +1,12 @@
 package main
 
 import (
+	docker "drone/drone-docker"
 	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-
-	"github.com/drone-plugins/drone-docker"
 )
 
 var (
