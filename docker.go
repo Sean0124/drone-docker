@@ -116,14 +116,18 @@ func (p Plugin) Exec() error {
 		cmds = append(cmds, commandPull(img))
 	}
 
+	fmt.Println("docker build")
 	cmds = append(cmds, commandBuild(p.Build)) // docker build
 
-	for _, tag := range p.Build.Tags {
+	for index, tag := range p.Build.Tags {
+		fmt.Println("docker tag")
 		cmds = append(cmds, commandTag(p.Build, tag)) // docker tag
-		workspaceDir := os.Getenv("DRONE_WORKSPACE")
-		tagFile := fmt.Sprintf("%s%s", workspaceDir, "/.tags")
+
 		if p.Dryrun == false {
+			fmt.Println("docker push")
 			cmds = append(cmds, commandPush(p.Build, tag)) // docker push
+			workspaceDir := os.Getenv("DRONE_WORKSPACE")
+			tagFile := fmt.Sprintf("%s%s", workspaceDir, "/.tags")
 			if _, err := os.Stat(tagFile); err != nil {
 				if os.IsNotExist(err) {
 					fmt.Println(err)
@@ -132,19 +136,17 @@ func (p Plugin) Exec() error {
 					break
 				}
 			} else {
-				for index, tag := range p.Build.Tags {
-					tagArr := strings.Split(".", tag)
-					fmt.Println("tag:", tag)
-					tagint, _ := strconv.Atoi(tagArr[2])
-					fmt.Println("tagint:", tagint)
-					tagint++
-					tagstring := strconv.Itoa(tagint)
-					fmt.Println("tagstring:", tagstring)
-					tag := fmt.Sprintf("%s.%s.%s", tagArr[0], tagArr[1], tagstring)
-					fmt.Println("newtag:", tag)
-					p.Build.Tags[index] = tag
-					fmt.Println("new tag:", p.Build.Tags[index])
-				}
+				tagArr := strings.Split(".", tag)
+				fmt.Println("tag:", tag)
+				tagint, _ := strconv.Atoi(tagArr[2])
+				fmt.Println("tagint:", tagint)
+				tagint++
+				tagstring := strconv.Itoa(tagint)
+				fmt.Println("tagstring:", tagstring)
+				tag := fmt.Sprintf("%s.%s.%s", tagArr[0], tagArr[1], tagstring)
+				fmt.Println("newtag:", tag)
+				p.Build.Tags[index] = tag
+				fmt.Println("new tag:", p.Build.Tags[index])
 			}
 		}
 	}
