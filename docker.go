@@ -87,6 +87,8 @@ func (p Plugin) Exec() error {
 		time.Sleep(time.Second * 4)
 	}
 
+	time.Sleep(300 * time.Second)
+
 	// login to the Docker registry
 	if p.Login.Password != "" {
 		cmd := commandLogin(p.Login)
