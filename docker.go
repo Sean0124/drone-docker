@@ -160,8 +160,9 @@ func (p Plugin) Exec() error {
 				break
 			}
 		} else {
-			tagArr := strings.Split(".", tag)
+			tagArr := strings.Split(tag,".")
 			fmt.Println("tag:", tag)
+			fmt.Printf("%v",tagArr)
 			tagint, _ := strconv.Atoi(tagArr[2])
 			fmt.Println("tagint:", tagint)
 			tagint++
