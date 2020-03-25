@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -69,7 +70,7 @@ type (
 func (p Plugin) Exec() error {
 	// start the Docker daemon server
 	if !p.Daemon.Disabled {
-		fmt.Fprintln(os.Stdout,"start the Docker daemon server")
+		fmt.Fprintln(os.Stdout, "start the Docker daemon server")
 		fmt.Println("start the Docker daemon server")
 		p.startDaemon()
 	}
@@ -77,7 +78,7 @@ func (p Plugin) Exec() error {
 	// poll the docker daemon until it is started. This ensures the daemon is
 	// ready to accept connections before we proceed.
 	for i := 0; i < 30; i++ {
-		fmt.Fprintln(os.Stdout,"poll the docker daemon until it is started")
+		fmt.Fprintln(os.Stdout, "poll the docker daemon until it is started")
 		fmt.Println("poll the docker daemon until it is started.")
 		cmd := commandInfo()
 		err := cmd.Run()
@@ -86,8 +87,6 @@ func (p Plugin) Exec() error {
 		}
 		time.Sleep(time.Second * 4)
 	}
-
-	time.Sleep(300 * time.Second)
 
 	// login to the Docker registry
 	if p.Login.Password != "" {
@@ -121,9 +120,32 @@ func (p Plugin) Exec() error {
 
 	for _, tag := range p.Build.Tags {
 		cmds = append(cmds, commandTag(p.Build, tag)) // docker tag
-
+		workspaceDir := os.Getenv("DRONE_WORKSPACE")
+		tagFile := fmt.Sprintf("%s%s", workspaceDir, "/.tags")
 		if p.Dryrun == false {
 			cmds = append(cmds, commandPush(p.Build, tag)) // docker push
+			if _, err := os.Stat(tagFile); err != nil {
+				if os.IsNotExist(err) {
+					fmt.Println(err)
+				} else {
+					fmt.Println(err)
+					break
+				}
+			} else {
+				for index, tag := range p.Build.Tags {
+					tagArr := strings.Split(".", tag)
+					fmt.Println("tag:", tag)
+					tagint, _ := strconv.Atoi(tagArr[2])
+					fmt.Println("tagint:", tagint)
+					tagint++
+					tagstring := strconv.Itoa(tagint)
+					fmt.Println("tagstring:", tagstring)
+					tag := fmt.Sprintf("%s.%s.%s", tagArr[0], tagArr[1], tagstring)
+					fmt.Println("newtag:", tag)
+					p.Build.Tags[index] = tag
+					fmt.Println("new tag:", p.Build.Tags[index])
+				}
+			}
 		}
 	}
 
