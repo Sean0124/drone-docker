@@ -2,6 +2,7 @@ package docker
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strconv"
@@ -119,35 +120,13 @@ func (p Plugin) Exec() error {
 	fmt.Println("docker build")
 	cmds = append(cmds, commandBuild(p.Build)) // docker build
 
-	for index, tag := range p.Build.Tags {
+	for _, tag := range p.Build.Tags {
 		fmt.Println("docker tag")
 		cmds = append(cmds, commandTag(p.Build, tag)) // docker tag
 
 		if p.Dryrun == false {
 			fmt.Println("docker push")
 			cmds = append(cmds, commandPush(p.Build, tag)) // docker push
-			workspaceDir := os.Getenv("DRONE_WORKSPACE")
-			tagFile := fmt.Sprintf("%s%s", workspaceDir, "/.tags")
-			if _, err := os.Stat(tagFile); err != nil {
-				if os.IsNotExist(err) {
-					fmt.Println(err)
-				} else {
-					fmt.Println(err)
-					break
-				}
-			} else {
-				tagArr := strings.Split(".", tag)
-				fmt.Println("tag:", tag)
-				tagint, _ := strconv.Atoi(tagArr[2])
-				fmt.Println("tagint:", tagint)
-				tagint++
-				tagstring := strconv.Itoa(tagint)
-				fmt.Println("tagstring:", tagstring)
-				tag := fmt.Sprintf("%s.%s.%s", tagArr[0], tagArr[1], tagstring)
-				fmt.Println("newtag:", tag)
-				p.Build.Tags[index] = tag
-				fmt.Println("new tag:", p.Build.Tags[index])
-			}
 		}
 	}
 
@@ -167,6 +146,36 @@ func (p Plugin) Exec() error {
 			fmt.Printf("Could not pull cache-from image %s. Ignoring...\n", cmd.Args[2])
 		} else if err != nil {
 			return err
+		}
+	}
+
+	for index, tag := range p.Build.Tags {
+		workspaceDir := os.Getenv("DRONE_WORKSPACE")
+		tagFile := fmt.Sprintf("%s%s", workspaceDir, "/.tags")
+		if _, err := os.Stat(tagFile); err != nil {
+			if os.IsNotExist(err) {
+				fmt.Println(err)
+			} else {
+				fmt.Println(err)
+				break
+			}
+		} else {
+			tagArr := strings.Split(".", tag)
+			fmt.Println("tag:", tag)
+			tagint, _ := strconv.Atoi(tagArr[2])
+			fmt.Println("tagint:", tagint)
+			tagint++
+			tagstring := strconv.Itoa(tagint)
+			fmt.Println("tagstring:", tagstring)
+			tag := fmt.Sprintf("%s.%s.%s", tagArr[0], tagArr[1], tagstring)
+			fmt.Println("newtag:", tag)
+			p.Build.Tags[index] = tag
+			fmt.Println("new tag:", p.Build.Tags[index])
+			var d1 = []byte(p.Build.Tags[index])
+			err := ioutil.WriteFile(tagFile, d1, 0666) //写入文件(字节数组)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	}
 
