@@ -115,15 +115,16 @@ func MysqlUpdate(db *sql.DB,tag string)  {
 
 	DRONE_REPO := os.Getenv("DRONE_REPO")
 	DRONE_BRANCH := os.Getenv("DRONE_BRANCH")
+	fmt.Println("MysqlUpdate tag:",tag)
 	_, err = stmt.Exec(tag, DRONE_REPO, DRONE_BRANCH)
 	checkErr(err)
 }
 
 func MysqlFind(db *sql.DB)  (TAG string) {
-	//DRONE_REPO := os.Getenv("DRONE_REPO")
-	//DRONE_BRANCH := os.Getenv("DRONE_BRANCH")
-	DRONE_REPO := "cloudclusters-websites/cloudclusters"
-	DRONE_BRANCH := "develop"
+	DRONE_REPO := os.Getenv("DRONE_REPO")
+	DRONE_BRANCH := os.Getenv("DRONE_BRANCH")
+	//DRONE_REPO := "cloudcdlusters-websites/cloudclusters"
+	//DRONE_BRANCH := "devedlop"
 	db.QueryRow("SELECT TAG FROM drone where DRONE_REPO=? and DRONE_BRANCH=?",DRONE_REPO,DRONE_BRANCH).Scan(&TAG)
 	return TAG
 
