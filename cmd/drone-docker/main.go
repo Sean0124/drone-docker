@@ -2,7 +2,10 @@ package main
 
 import (
 	docker "drone/drone-docker"
+	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -130,6 +133,11 @@ func main() {
 			Name:   "tags.auto",
 			Usage:  "default build tags",
 			EnvVar: "PLUGIN_DEFAULT_TAGS,PLUGIN_AUTO_TAG",
+		},
+		cli.BoolFlag{
+			Name:   "pvtag",
+			Usage:  "tag storge mysql",
+			EnvVar: "PLUGIN_PVTAG",
 		},
 		cli.StringFlag{
 			Name:   "tags.suffix",
@@ -292,6 +300,30 @@ func run(c *cli.Context) error {
 		} else {
 			logrus.Printf("skipping automated docker build for %s", c.String("commit.ref"))
 			return nil
+		}
+	}
+
+	if c.Bool("pvtag") {
+		tag := docker.MysqlFind(docker.MysqlCont())
+		if len(tag)==0  {
+			docker.MysqlInset(docker.MysqlCont())
+			tags := []string{"0.0.1"}
+			plugin.Build.Tags = tags
+		} else {
+			tags := []string{tag}
+			plugin.Build.Tags = tags
+
+			tagArr := strings.Split(tag,".")
+			fmt.Println("tag:", tag)
+			fmt.Printf("%v",tagArr)
+			tagint, _ := strconv.Atoi(tagArr[2])
+			fmt.Println("tagint:", tagint)
+			tagint++
+			tagstring := strconv.Itoa(tagint)
+			fmt.Println("tagstring:", tagstring)
+			tag := fmt.Sprintf("%s.%s.%s", tagArr[0], tagArr[1], tagstring)
+			fmt.Println("newtag:", tag)
+			docker.MysqlUpdate(docker.MysqlCont(),tag)
 		}
 	}
 
