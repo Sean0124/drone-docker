@@ -2,14 +2,10 @@ package main
 
 import (
 	docker "drone/drone-docker"
-	"fmt"
-	"os"
-	"strconv"
-	"strings"
-
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
+	"os"
 )
 
 var (
@@ -304,26 +300,43 @@ func run(c *cli.Context) error {
 	}
 
 	if c.Bool("pvtag") {
-		tag := docker.MysqlFind(docker.MysqlCont())
+
+		tagStore,err := docker.InitTagStore("mysql",
+			docker.WithUrl("root:5ziEppim@tcp(mysql-2580-0.tripanels.com:2580)/tags?charset=utf8"),
+			)
+		if err != nil {
+			panic("init registry failed")
+		}
+
+		//DB := docker.MysqlCont()
+		//tag := docker.MysqlFind(DB)
+		tag := tagStore.TagFind()
 		if len(tag)==0  {
-			docker.MysqlInset(docker.MysqlCont())
-			tags := []string{"0.0.1"}
-			plugin.Build.Tags = tags
-		} else {
+			//docker.MysqlInset(DB)
+			tagStore.TagInset()
+			tag ,_:= docker.TagTemplateInit("3.3.32-aa")
 			tags := []string{tag}
 			plugin.Build.Tags = tags
+		} else {
+			tag,_:= docker.TagTemplateParse(tag)
+			tag.Patch++
+			tagString := tag.String()
 
-			tagArr := strings.Split(tag,".")
-			fmt.Println("tag:", tag)
-			fmt.Printf("%v",tagArr)
-			tagint, _ := strconv.Atoi(tagArr[2])
-			fmt.Println("tagint:", tagint)
-			tagint++
-			tagstring := strconv.Itoa(tagint)
-			fmt.Println("tagstring:", tagstring)
-			tag := fmt.Sprintf("%s.%s.%s", tagArr[0], tagArr[1], tagstring)
-			fmt.Println("newtag:", tag)
-			docker.MysqlUpdate(docker.MysqlCont(),tag)
+			//tagArr := strings.Split(tag,".")
+			//fmt.Println("tag:", tag)
+			//fmt.Printf("%v",tagArr)
+			//tagint, _ := strconv.Atoi(tagArr[2])
+			//fmt.Println("tagint:", tagint)
+			//tagint++
+			//
+			//tagstring := strconv.Itoa(tagint)
+			//fmt.Println("tagstring:", tagstring)
+			//tag := fmt.Sprintf("%s.%s.%s", tagArr[0], tagArr[1], tagstring)
+			//fmt.Println("newtag:", tag)
+			tags := []string{tagString}
+			plugin.Build.Tags = tags
+			//docker.MysqlUpdate(DB,tagString)
+			tagStore.TagUpdate(tagString)
 		}
 	}
 

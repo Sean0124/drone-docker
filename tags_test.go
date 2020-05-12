@@ -175,3 +175,9 @@ func TestUseDefaultTag(t *testing.T) {
 		}
 	}
 }
+
+func TestTagTemplateInit(t *testing.T) {
+	TagTemplateParse("asdf-3.3.3-we")
+	TagTemplateParse("v3.3.3-we")
+	TagTemplateParse("3.3.3-we")
+}

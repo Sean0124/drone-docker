@@ -105,6 +105,10 @@ steps:
     dockerfile: docker/docker/Dockerfile.linux.amd64
     repo: registry.cloudclusters.net/cloudclusters/plugins-docker
     registry: registry.cloudclusters.net
+  volumes:
+    - name: dockercache
+      path: /var/lib/docker
+
   when:
     event:
       exclude:
@@ -119,5 +123,10 @@ trigger:
 depends_on:
 - testing
 
+
+volumes:
+  - name: dockercache
+    host:
+      path: /tmp/docker/${DRONE_REPO}/${DRONE_BRANCH}
 
 
