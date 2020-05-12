@@ -300,12 +300,15 @@ func run(c *cli.Context) error {
 	}
 
 	if c.Bool("pvtag") {
-
 		tagStore,err := docker.InitTagStore("mysql",
 			docker.WithUrl("root:5ziEppim@tcp(mysql-2580-0.tripanels.com:2580)/tags?charset=utf8"),
 			)
 		if err != nil {
 			panic("init registry failed")
+		}
+		err = docker.RegisterTagStorePlugin(tagStore)
+		if err != nil {
+			panic("registr failed")
 		}
 
 		//DB := docker.MysqlCont()
@@ -314,7 +317,7 @@ func run(c *cli.Context) error {
 		if len(tag)==0  {
 			//docker.MysqlInset(DB)
 			tagStore.TagInset()
-			tag ,_:= docker.TagTemplateInit("3.3.32-aa")
+			tag ,_:= docker.TagTemplateInit("3.3.3")
 			tags := []string{tag}
 			plugin.Build.Tags = tags
 		} else {
