@@ -100,7 +100,7 @@ steps:
   image: plugins/docker:18
   settings:
     auto_tag: true
-    auto_tag_suffix: linux-amd64
+    auto_tag_suffix: linux-amd64pro
     daemon_off: false
     dockerfile: docker/docker/Dockerfile.linux.amd64
     repo: registry.cloudclusters.net/cloudclusters/plugins-docker
