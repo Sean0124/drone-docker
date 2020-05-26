@@ -90,7 +90,7 @@ steps:
     dry_run: true
     repo: registry.cloudclusters.net/cloudclusters/plugins-docker
     registry: registry.cloudclusters.net
-    tags: linux-amd64
+    tags: linux-amd64-test
   when:
     event:
     - pull_request
@@ -105,6 +105,10 @@ steps:
     dockerfile: docker/docker/Dockerfile.linux.amd64
     repo: registry.cloudclusters.net/cloudclusters/plugins-docker
     registry: registry.cloudclusters.net
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
   volumes:
     - name: dockercache
       path: /var/lib/docker
