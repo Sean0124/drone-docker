@@ -31,11 +31,9 @@ steps:
     path: /go
 
 volumes:
-- name: gopath
+  - name: gopath
     host:
       path: /tmp/go/${DRONE_REPO}/${DRONE_BRANCH}
-
-
 
 trigger:
   ref:
