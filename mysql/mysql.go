@@ -7,16 +7,25 @@ import (
 	"os"
 )
 
-type MysqlTagStore struct {
+type TagStoreMysql struct {
 	options *docker.Options
 	client  *sql.DB
 }
 
-func (m *MysqlTagStore) Name() string {
+func init() {
+	var mysqlinfo *TagStoreMysql = &TagStoreMysql{
+		options: nil,
+		client:  nil,
+	}
+
+	docker.RegisterTagStorePlugin(mysqlinfo)
+}
+
+func (m *TagStoreMysql) Name() string {
 	return "mysql"
 }
 
-func (m *MysqlTagStore) Init(opts ...docker.Option) (err error) {
+func (m *TagStoreMysql) Init(opts ...docker.Option) (err error) {
 	m.options = &docker.Options{}
 	for _, opt := range opts {
 		opt(m.options)
@@ -31,21 +40,23 @@ func (m *MysqlTagStore) Init(opts ...docker.Option) (err error) {
 	return
 }
 
-func (m *MysqlTagStore) TagInset() {
-	marksql := "create table tag (id int(20) primary key auto_increment,DRONE_REPO char(50),DRONE_BRANCH char(50),TAG char(50);"
-	smt, err := m.client.Prepare(marksql)
-	checkErr(err)
-	smt.Exec()
-
+func (m *TagStoreMysql) TagInset() {
+	//fmt.Println("start taginset")
+	//marksql := "create table tag (id int(20) primary key auto_increment,DRONE_REPO char(50),DRONE_BRANCH char(50),TAG char(50);"
+	//smt, err := m.client.Prepare(marksql)
+	//checkErr(err)
+	//smt.Exec()
+	//fmt.Println("start taginset Prepare")
 	stmt, err := m.client.Prepare("INSERT drone SET DRONE_REPO=?,DRONE_BRANCH=?,TAG=?")
 	checkErr(err)
 	DRONE_REPO := os.Getenv("DRONE_REPO")
 	DRONE_BRANCH := os.Getenv("DRONE_BRANCH")
-	_, err = stmt.Exec(DRONE_REPO, DRONE_BRANCH, "0.0.1")
+	//fmt.Println("start taginset Exec")
+	_, err = stmt.Exec(DRONE_REPO, DRONE_BRANCH, "0.0.0")
 	checkErr(err)
 }
 
-func (m *MysqlTagStore) TagUpdate(tag string) {
+func (m *TagStoreMysql) TagUpdate(tag string) {
 	stmt, err := m.client.Prepare("update drone set TAG=? where DRONE_REPO=? and DRONE_BRANCH=?")
 	checkErr(err)
 
@@ -56,7 +67,7 @@ func (m *MysqlTagStore) TagUpdate(tag string) {
 	checkErr(err)
 }
 
-func (m *MysqlTagStore) TagFind() (tag string) {
+func (m *TagStoreMysql) TagFind() (tag string) {
 	DRONE_REPO := os.Getenv("DRONE_REPO")
 	DRONE_BRANCH := os.Getenv("DRONE_BRANCH")
 	//DRONE_REPO := "cloudcdlusters-websites/cloudclusters"
