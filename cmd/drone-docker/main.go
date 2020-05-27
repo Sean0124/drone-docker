@@ -309,10 +309,6 @@ func run(c *cli.Context) error {
 			fmt.Println(err)
 			panic("init registry failed")
 		}
-		err = docker.RegisterTagStorePlugin(tagStore)
-		if err != nil {
-			panic("registr failed")
-		}
 
 		//DB := docker.MysqlCont()
 		//tag := docker.MysqlFind(DB)
