@@ -2,6 +2,7 @@ package main
 
 import (
 	docker "drone/drone-docker"
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -304,6 +305,7 @@ func run(c *cli.Context) error {
 			docker.WithUrl("root:5ziEppim@tcp(mysql-2580-0.tripanels.com:2580)/tags?charset=utf8"),
 			)
 		if err != nil {
+			fmt.Println(err)
 			panic("init registry failed")
 		}
 		err = docker.RegisterTagStorePlugin(tagStore)
