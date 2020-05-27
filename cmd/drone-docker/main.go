@@ -4,6 +4,7 @@ import (
 	docker "drone/drone-docker"
 	_ "drone/drone-docker/mysql"
 	"fmt"
+	"github.com/coreos/go-semver/semver"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -320,7 +321,7 @@ func run(c *cli.Context) error {
 		//tagStore,err := docker.InitTagStore("mysql",
 		//	docker.WithUrl("root:5ziEppim@tcp(mysql-2580-0.tripanels.com:2580)/tags?charset=utf8"),
 		//	)
-		fmt.Println(c.String("pvtag.storeplugin"),c.String("pvtag.pluginurl"),c.String("pvtag.template"))
+		fmt.Println(c.String("pvtag.storeplugin"), c.String("pvtag.pluginurl"), c.String("pvtag.template"))
 		tagStore, err := docker.InitTagStore(c.String("pvtag.storeplugin"),
 			docker.WithUrl(c.String("pvtag.pluginurl")),
 		)
@@ -330,20 +331,33 @@ func run(c *cli.Context) error {
 		}
 
 		tag := tagStore.TagFind()
-		if len(tag) == 0 {
+		if len(tag) == 0  {
+			if len(c.String("pvtag.template")) != 0 {
+				tag, _ = docker.TagTemplateInit(c.String("pvtag.template"))
+			} else {
+				tag, _ = docker.TagTemplateInit("0.0.0")
+			}
 			tagStore.TagInset()
-			tag, _ := docker.TagTemplateInit(c.String("pvtag.template"))
 			tags := []string{tag}
 			plugin.Build.Tags = tags
 		} else {
-			tag, _ := docker.TagTemplateParse(tag)
-			tag.Patch++
-			tagString := tag.String()
+			var newTag *semver.Version
+			if len(c.String("pvtag.template")) != 0 {
+				oldTag ,_:= docker.TagTemplateParse(tag)
+				templateTag, _ := docker.TagTemplateParse(c.String("pvtag.template"))
+				templateTag.Patch = oldTag.Patch
+				newTag = templateTag
+			} else {
+				newTag, _ = docker.TagTemplateParse(tag)
+			}
+			newTag.Patch++
+			tagString := newTag.String()
 
 			tags := []string{tagString}
 			plugin.Build.Tags = tags
 
 			tagStore.TagUpdate(tagString)
+
 		}
 	}
 
