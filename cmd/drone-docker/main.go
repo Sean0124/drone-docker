@@ -3,6 +3,7 @@ package main
 import (
 	docker "drone/drone-docker"
 	_ "drone/drone-docker/mysql"
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -319,10 +320,12 @@ func run(c *cli.Context) error {
 		//tagStore,err := docker.InitTagStore("mysql",
 		//	docker.WithUrl("root:5ziEppim@tcp(mysql-2580-0.tripanels.com:2580)/tags?charset=utf8"),
 		//	)
+		fmt.Println(c.String("pvtag.storeplugin"),c.String("pvtag.pluginurl"),c.String("pvtag.template"))
 		tagStore, err := docker.InitTagStore(c.String("pvtag.storeplugin"),
 			docker.WithUrl(c.String("pvtag.pluginurl")),
 		)
 		if err != nil {
+			fmt.Println(err)
 			panic("init registry failed")
 		}
 
