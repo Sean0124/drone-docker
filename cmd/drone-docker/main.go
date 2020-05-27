@@ -3,7 +3,6 @@ package main
 import (
 	docker "drone/drone-docker"
 	_ "drone/drone-docker/mysql"
-	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
