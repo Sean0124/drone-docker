@@ -138,6 +138,21 @@ func main() {
 			EnvVar: "PLUGIN_PVTAG",
 		},
 		cli.StringFlag{
+			Name:   "pvtag.storeplugin",
+			Usage:  "tag storge plugin",
+			EnvVar: "PLUGIN_PVTAG_PLUGIN",
+		},
+		cli.StringFlag{
+			Name:   "pvtag.pluginurl",
+			Usage:  "tag storge pluginurl",
+			EnvVar: "PLUGIN_PVTAG_URL",
+		},
+		cli.StringFlag{
+			Name:   "pvtag.template",
+			Usage:  "tag storge template",
+			EnvVar: "PLUGIN_PVTAG_TEMPLATE",
+		},
+		cli.StringFlag{
 			Name:   "tags.suffix",
 			Usage:  "default build tags with suffix",
 			EnvVar: "PLUGIN_DEFAULT_SUFFIX,PLUGIN_AUTO_TAG_SUFFIX",
@@ -302,21 +317,21 @@ func run(c *cli.Context) error {
 	}
 
 	if c.Bool("pvtag") {
-		tagStore,err := docker.InitTagStore("mysql",
-			docker.WithUrl("root:5ziEppim@tcp(mysql-2580-0.tripanels.com:2580)/tags?charset=utf8"),
+		//tagStore,err := docker.InitTagStore("mysql",
+		//	docker.WithUrl("root:5ziEppim@tcp(mysql-2580-0.tripanels.com:2580)/tags?charset=utf8"),
+		//	)
+		tagStore,err := docker.InitTagStore(c.String("pvtag.storeplugin"),
+			docker.WithUrl(c.String("pvtag.pluginurl")),
 			)
 		if err != nil {
-			fmt.Println(err)
 			panic("init registry failed")
 		}
 
-		//DB := docker.MysqlCont()
-		//tag := docker.MysqlFind(DB)
+
 		tag := tagStore.TagFind()
 		if len(tag)==0  {
-			//docker.MysqlInset(DB)
 			tagStore.TagInset()
-			tag ,_:= docker.TagTemplateInit("3.3.3")
+			tag ,_:= docker.TagTemplateInit(c.String("pvtag.template"))
 			tags := []string{tag}
 			plugin.Build.Tags = tags
 		} else {
@@ -324,20 +339,10 @@ func run(c *cli.Context) error {
 			tag.Patch++
 			tagString := tag.String()
 
-			//tagArr := strings.Split(tag,".")
-			//fmt.Println("tag:", tag)
-			//fmt.Printf("%v",tagArr)
-			//tagint, _ := strconv.Atoi(tagArr[2])
-			//fmt.Println("tagint:", tagint)
-			//tagint++
-			//
-			//tagstring := strconv.Itoa(tagint)
-			//fmt.Println("tagstring:", tagstring)
-			//tag := fmt.Sprintf("%s.%s.%s", tagArr[0], tagArr[1], tagstring)
-			//fmt.Println("newtag:", tag)
+
 			tags := []string{tagString}
 			plugin.Build.Tags = tags
-			//docker.MysqlUpdate(DB,tagString)
+
 			tagStore.TagUpdate(tagString)
 		}
 	}
