@@ -230,20 +230,20 @@ func commandBuild(build Build) *exec.Cmd {
 		args = append(args, "--target", build.Target)
 	}
 
-	labelSchema := []string{
-		"schema-version=1.0",
-		fmt.Sprintf("build-date=%s", time.Now().Format(time.RFC3339)),
-		fmt.Sprintf("vcs-ref=%s", build.Name),
-		fmt.Sprintf("vcs-url=%s", build.Remote),
-	}
-
-	if len(build.LabelSchema) > 0 {
-		labelSchema = append(labelSchema, build.LabelSchema...)
-	}
-
-	for _, label := range labelSchema {
-		args = append(args, "--label", fmt.Sprintf("org.label-schema.%s", label))
-	}
+	//labelSchema := []string{
+	//	"schema-version=1.0",
+	//	fmt.Sprintf("build-date=%s", time.Now().Format(time.RFC3339)),
+	//	fmt.Sprintf("vcs-ref=%s", build.Name),
+	//	fmt.Sprintf("vcs-url=%s", build.Remote),
+	//}
+	//
+	//if len(build.LabelSchema) > 0 {
+	//	labelSchema = append(labelSchema, build.LabelSchema...)
+	//}
+	//
+	//for _, label := range labelSchema {
+	//	args = append(args, "--label", fmt.Sprintf("org.label-schema.%s", label))
+	//}
 
 	if len(build.Labels) > 0 {
 		for _, label := range build.Labels {
