@@ -1,14 +1,7 @@
 # drone-docker
 
-[![Build Status](http://cloud.drone.io/api/badges/drone-plugins/drone-docker/status.svg)](http://cloud.drone.io/drone-plugins/drone-docker)
-[![Gitter chat](https://badges.gitter.im/drone/drone.png)](https://gitter.im/drone/drone)
-[![Join the discussion at https://discourse.drone.io](https://img.shields.io/badge/discourse-forum-orange.svg)](https://discourse.drone.io)
-[![Drone questions at https://stackoverflow.com](https://img.shields.io/badge/drone-stackoverflow-orange.svg)](https://stackoverflow.com/questions/tagged/drone.io)
-[![](https://images.microbadger.com/badges/image/plugins/docker.svg)](https://microbadger.com/images/plugins/docker "Get your own image badge on microbadger.com")
-[![Go Doc](https://godoc.org/github.com/drone-plugins/drone-docker?status.svg)](http://godoc.org/github.com/drone-plugins/drone-docker)
-[![Go Report](https://goreportcard.com/badge/github.com/drone-plugins/drone-docker)](https://goreportcard.com/report/github.com/drone-plugins/drone-docker)
-
-Drone plugin to build and publish Docker images to a container registry. For the usage information and a listing of the available options please take a look at [the docs](http://plugins.drone.io/drone-plugins/drone-docker/).
+[![Build Status](http://cloud.drone.io/api/badges/drone-plugins/drone-docker/status.svg)](https://drone.tripanels.com/Sean/drone-docker/)
+Drone plugin to build and publish Docker images to a container registry. For the usage information and a listing of the available options please take a look at [the docs](https://wordpress-3238-blog.tripanels.com/drone-docker%e6%b7%bb%e5%8a%a0tag%e7%ae%a1%e7%90%86/).
 
 ## Build
 
