@@ -37,6 +37,7 @@ volumes:
 
 trigger:
   ref:
+  - refs/heads/*
   - "refs/tags/**"
   - "refs/pull/**"
 
@@ -139,6 +140,7 @@ steps:
 
 trigger:
   ref:
+  - refs/heads/*
   - "refs/tags/**"
   - "refs/pull/**"
 
