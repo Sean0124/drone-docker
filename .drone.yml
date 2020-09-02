@@ -114,7 +114,7 @@ steps:
     - name: dockercache
       path: /var/lib/docker
 
-- name: publish
+- name: publish-develop
   pull: always
   image: plugins/docker:18
   settings:
