@@ -132,9 +132,9 @@ steps:
   volumes:
     - name: dockercache
       path: /var/lib/docker
-  when:
-    branch:
-      - develop
+when:
+  ref:
+    - refs/heads/develop
 
 
 trigger:
