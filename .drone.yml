@@ -35,12 +35,6 @@ volumes:
     host:
       path: /tmp/go/${DRONE_REPO}/${DRONE_BRANCH}
 
-trigger:
-  ref:
-  - refs/heads/master
-  - refs/heads/develop
-  - "refs/tags/**"
-  - "refs/pull/**"
 
 ---
 kind: pipeline
@@ -60,22 +54,6 @@ steps:
   environment:
     CGO_ENABLED: 0
     GO111MODULE: on
-  when:
-    event:
-      exclude:
-      - tag
-
-- name: build-tag
-  pull: always
-  image: golang:1.11
-  commands:
-  - "go build -v -ldflags \"-X main.version=${DRONE_TAG##v}\" -a -tags netgo -o release/linux/amd64/drone-docker ./cmd/drone-docker"
-  environment:
-    CGO_ENABLED: 0
-    GO111MODULE: on
-  when:
-    event:
-    - tag
 
 - name: executable
   pull: always
@@ -83,39 +61,8 @@ steps:
   commands:
   - ./release/linux/amd64/drone-docker --help
 
-- name: dryrun
-  pull: always
-  image: plugins/docker:18
-  settings:
-    daemon_off: false
-    dockerfile: docker/docker/Dockerfile.linux.amd64
-    dry_run: true
-    repo: registry.cloudclusters.net/cloudclusters/plugins-docker
-    registry: registry.cloudclusters.net
-    tags: linux-amd64-test
-  when:
-    event:
-    - pull_request
 
 - name: publish
-  pull: always
-  image: plugins/docker:18
-  settings:
-    auto_tag: true
-    auto_tag_suffix: linux-amd64pro
-    daemon_off: false
-    dockerfile: docker/docker/Dockerfile.linux.amd64
-    repo: registry.cloudclusters.net/cloudclusters/plugins-docker
-    registry: registry.cloudclusters.net
-    username:
-      from_secret: docker_username
-    password:
-      from_secret: docker_password
-  volumes:
-    - name: dockercache
-      path: /var/lib/docker
-
-- name: publish-develop
   pull: always
   image: plugins/docker:18
   settings:
@@ -132,17 +79,8 @@ steps:
   volumes:
     - name: dockercache
       path: /var/lib/docker
-when:
-  ref:
-    - refs/heads/develop
 
 
-trigger:
-  ref:
-  - refs/heads/master
-  - refs/heads/develop
-  - "refs/tags/**"
-  - "refs/pull/**"
 
 depends_on:
 - testing

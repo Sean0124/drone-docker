@@ -83,7 +83,7 @@ func (p Plugin) Exec() error {
 
 	// poll the docker daemon until it is started. This ensures the daemon is
 	// ready to accept connections before we proceed.
-	for i := 0; i < 30; i++ {
+	for i := 0; i < 10; i++ {
 		fmt.Fprintln(os.Stdout, "poll the docker daemon until it is started")
 		fmt.Println("poll the docker daemon until it is started.")
 		cmd := commandInfo()
@@ -91,7 +91,7 @@ func (p Plugin) Exec() error {
 		if err == nil {
 			break
 		}
-		time.Sleep(time.Second * 4)
+		time.Sleep(time.Second * 2)
 	}
 
 	// login to the Docker registry
