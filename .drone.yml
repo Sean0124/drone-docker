@@ -33,8 +33,10 @@ steps:
 volumes:
   - name: gopath
     host:
-      path: /tmp/go/${DRONE_REPO}/${DRONE_BRANCH}
+      path: /es-data/go/${DRONE_REPO}/${DRONE_BRANCH}
 
+node_selector:
+  kubernetes.io/hostname: efk
 
 ---
 kind: pipeline
@@ -85,10 +87,12 @@ steps:
 depends_on:
 - testing
 
+node_selector:
+  kubernetes.io/hostname: efk
 
 volumes:
   - name: dockercache
     host:
-      path: /tmp/docker/${DRONE_REPO}/${DRONE_BRANCH}
+      path: /es-data/docker/${DRONE_REPO}/${DRONE_BRANCH}
 
 
