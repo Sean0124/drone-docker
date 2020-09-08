@@ -171,7 +171,8 @@ func (p Plugin) Exec() error {
 		}
 
 		logrus.Printf("写入文件: %s",env)
-		n, err := txt.WriteString(p.Build.Tags[0] + "\n")
+		target := fmt.Sprintf("%s:%s", p.Build.Repo, p.Build.Tags[0])
+		n, err := txt.WriteString("KUBE_IMAGE = " + target + "\n")
 		if err == nil && n == 0 {
 			logrus.Fatal(err)
 		}
