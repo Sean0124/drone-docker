@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	docker "drone/drone-docker"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"os"
 )
 
@@ -41,17 +42,11 @@ func (m *TagStoreMysql) Init(opts ...docker.Option) (err error) {
 }
 
 func (m *TagStoreMysql) TagInset() {
-	//fmt.Println("start taginset")
-	//marksql := "create table tag (id int(20) primary key auto_increment,DRONE_REPO char(50),DRONE_BRANCH char(50),TAG char(50);"
-	//smt, err := m.client.Prepare(marksql)
-	//checkErr(err)
-	//smt.Exec()
-	//fmt.Println("start taginset Prepare")
+
 	stmt, err := m.client.Prepare("INSERT drone SET DRONE_REPO=?,DRONE_BRANCH=?,TAG=?")
 	checkErr(err)
 	DRONE_REPO := os.Getenv("DRONE_REPO")
 	DRONE_BRANCH := os.Getenv("DRONE_BRANCH")
-	//fmt.Println("start taginset Exec")
 	_, err = stmt.Exec(DRONE_REPO, DRONE_BRANCH, "0.0.0")
 	checkErr(err)
 }
@@ -62,7 +57,8 @@ func (m *TagStoreMysql) TagUpdate(tag string) {
 
 	DRONE_REPO := os.Getenv("DRONE_REPO")
 	DRONE_BRANCH := os.Getenv("DRONE_BRANCH")
-	fmt.Println("MysqlUpdate tag:", tag)
+	//fmt.Println("MysqlUpdate tag:", tag)
+	logrus.Printf("MysqlUpdate tag: %s", tag)
 	_, err = stmt.Exec(tag, DRONE_REPO, DRONE_BRANCH)
 	checkErr(err)
 }
@@ -78,6 +74,6 @@ func (m *TagStoreMysql) TagFind() (tag string) {
 
 func checkErr(err error) {
 	if err != nil {
-		panic(err)
+		logrus.Fatal(err)
 	}
 }

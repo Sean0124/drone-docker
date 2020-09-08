@@ -2,6 +2,7 @@ package docker
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"os"
 	"os/exec"
 	"strings"
@@ -157,10 +158,23 @@ func (p Plugin) Exec() error {
 		WithUrl(p.TagPluginInfo.PluginUrl),
 	)
 	if err != nil {
-		fmt.Println(err)
-		panic("init registry failed")
+		//fmt.Println(err)
+		//panic("init registry failed")
+		logrus.Fatal(err)
 	}
 	tagStore.TagUpdate(p.Build.Tags[0])
+	if env := os.Getenv("PLUGIN_ENV_FILE"); env != "" {
+		txt, err := os.OpenFile(env, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+		defer txt.Close()
+		if err != nil {
+			logrus.Fatal(err)
+		}
+
+		n, err := txt.WriteString(p.Build.Tags[0] + "\n")
+		if err == nil && n == 0 {
+			logrus.Fatal(err)
+		}
+	}
 	return nil
 }
 
