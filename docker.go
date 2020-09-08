@@ -170,10 +170,12 @@ func (p Plugin) Exec() error {
 			logrus.Fatal(err)
 		}
 
+		logrus.Printf("写入文件: %s",env)
 		n, err := txt.WriteString(p.Build.Tags[0] + "\n")
 		if err == nil && n == 0 {
 			logrus.Fatal(err)
 		}
+		logrus.Printf("写入文件: %s 内容: %s",env,p.Build.Tags[0])
 	}
 	return nil
 }
