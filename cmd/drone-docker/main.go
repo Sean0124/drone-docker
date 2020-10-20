@@ -3,7 +3,6 @@ package main
 import (
 	docker "drone/drone-docker"
 	_ "drone/drone-docker/mysql"
-	"fmt"
 	"github.com/coreos/go-semver/semver"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -327,8 +326,9 @@ func run(c *cli.Context) error {
 			docker.WithUrl(c.String("pvtag.pluginurl")),
 		)
 		if err != nil {
-			fmt.Println(err)
-			panic("init registry failed")
+			//fmt.Println(err)
+			//panic("init registry failed")
+			logrus.Fatal(err)
 		}
 
 		tag := tagStore.TagFind()

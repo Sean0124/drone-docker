@@ -81,8 +81,6 @@ steps:
     - name: dockercache
       path: /var/lib/docker
 
-
-
 depends_on:
 - testing
 
