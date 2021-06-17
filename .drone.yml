@@ -66,6 +66,7 @@ steps:
 - name: publish
   pull: always
   image: plugins/docker:18
+  privileged: true
   settings:
     tags: linux-amd64pro-20
     daemon_off: false
