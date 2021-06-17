@@ -68,7 +68,7 @@ steps:
   pull: always
   image: plugins/docker:18
   settings:
-    tags: linux-amd64pro
+    tags: linux-amd64pro-20
     daemon_off: false
     dockerfile: docker/docker/Dockerfile.linux.amd64
     repo: registry.cloudclusters.net/cloudclusters/plugins-docker
