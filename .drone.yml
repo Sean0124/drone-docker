@@ -92,3 +92,18 @@ volumes:
       path: /es-data/docker/${DRONE_REPO}/${DRONE_BRANCH}
 
 
+---
+kind: secret
+name: docker_username
+get:
+  path: docker
+  name: username
+
+---
+kind: secret
+name: docker_password
+get:
+  path: docker
+  name: password
+
+
